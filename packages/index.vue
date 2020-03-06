@@ -47,10 +47,31 @@
       <el-container class="widget-container"
                     direction="vertical">
         <el-header class="widget-container-header">
+
+          <el-button type="text"
+                     size="medium"
+                     icon="el-icon-document"
+                     @click="handleAvueDoc">表单列表</el-button>
+          <el-button type="text"
+                     size="medium"
+                     icon="el-icon-document"
+                     @click="handleAvueDoc">数据源列表</el-button>
+          <!--<el-button type="text"
+                     size="medium"
+                     icon="el-icon-document"
+                     @click="handleAvueDoc">组件列表</el-button>-->
+                     <el-button type="text"
+                     size="medium"
+                     icon="el-icon-document"
+                     @click="handleAvueDoc">可用范围列表</el-button>
+
+
+
           <el-button type="text"
                      size="medium"
                      icon="el-icon-document"
                      @click="handleAvueDoc">Avue文档</el-button>
+
           <el-button type="text"
                      size="medium"
                      icon="el-icon-upload2"
@@ -68,6 +89,8 @@
                      size="medium"
                      icon="el-icon-delete"
                      @click="handleClear">清空</el-button>
+
+          <avue-form :option="formOption" v-model="formObj" :menuBtn="false"></avue-form>
         </el-header>
         <el-main :style="{background: widgetForm.column.length == 0 ? `url(${widgetEmpty}) no-repeat 50%`: ''}">
           <widget-form ref="widgetForm"
@@ -245,6 +268,31 @@ export default {
       importJsonVisible: false,
       importJson: {},
       widgetModels: {},
+      // now form obj
+      formObj:{},
+      // now form edit
+      formOption:{
+        column: [
+//表单名：
+          {
+          label: '范围',
+          prop: 'select',
+          type: 'select',
+          // drag: true,
+          multiple: true,
+          dicData: [{
+              value: 'Shanghai',
+              label: '上海'
+            }, {
+              value: 'Beijing',
+              label: '北京'
+            }, {
+              value: 'Shenzhen',
+              label: '深圳'
+            }]
+          },
+        ]
+      },
     }
   },
   mounted () {

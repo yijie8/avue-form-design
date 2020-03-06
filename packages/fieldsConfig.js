@@ -251,7 +251,7 @@ export default [
     }],
   },
   {
-    title: '插件字段（请自行引入avue插件）',
+    title: '插件字段',
     list: [{
       type: 'ueditor',
       component: 'ueditor',
