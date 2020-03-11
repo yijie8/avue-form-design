@@ -48,7 +48,7 @@
                     direction="vertical">
         <el-header class="widget-container-header">
 
-          <el-button type="text"
+          <!--<el-button type="text"
                      size="medium"
                      icon="el-icon-document"
                      @click="handleAvueDoc">表单列表</el-button>
@@ -56,14 +56,14 @@
                      size="medium"
                      icon="el-icon-document"
                      @click="handleAvueDoc">数据源列表</el-button>
-          <!--<el-button type="text"
+          <el-button type="text"
                      size="medium"
                      icon="el-icon-document"
-                     @click="handleAvueDoc">组件列表</el-button>-->
+                     @click="handleAvueDoc">组件列表</el-button>
                      <el-button type="text"
                      size="medium"
                      icon="el-icon-document"
-                     @click="handleAvueDoc">可用范围列表</el-button>
+                     @click="handleAvueDoc">可用范围列表</el-button>-->
 
 
 
@@ -90,7 +90,28 @@
                      icon="el-icon-delete"
                      @click="handleClear">清空</el-button>
 
-          <avue-form :option="formOption" v-model="formObj" :menuBtn="false"></avue-form>
+
+        <el-button 
+                     type="danger"
+                     size="medium"
+                     icon="el-icon-circle-check"
+                     @click='$router.replace({"name":"formlist"})'>返回</el-button>
+
+        <el-button 
+                     type="success"
+                     size="medium"
+                     icon="el-icon-circle-check"
+                     @click="handleSave">保存</el-button>
+
+<el-form ref="form" label-width="80px">
+<el-form-item label="表单名:">
+    <el-input v-model="name" placeholder="请输入表单名"></el-input>
+  </el-form-item>
+</el-form>
+          
+
+          <!--<avue-form :option="formOption" v-model="formObj" :menuBtn="false"></avue-form>-->
+
         </el-header>
         <el-main :style="{background: widgetForm.column.length == 0 ? `url(${widgetEmpty}) no-repeat 50%`: ''}">
           <widget-form ref="widgetForm"
@@ -195,7 +216,7 @@ export default {
     },
     storage: {
       type: Boolean,
-      default: false
+      default: true
     },
     asideLeftWidth: {
       type: [String, Number],
@@ -207,10 +228,16 @@ export default {
     }
   },
   watch: {
+    name(val){
+      localStorage.setItem("name",val);
+    },
     widgetForm: {
       handler (val) {
         if (this.storage) {
-          if (val.column && val.column.length > 0) localStorage.setItem('avue-form', JSON.stringify(val))
+          if (val.column && val.column.length > 0 || true) {
+            localStorage.setItem("name",this.name);
+            localStorage.setItem('avue-form', JSON.stringify(val))
+          }
           else localStorage.removeItem('avue-form')
         }
       },
@@ -243,6 +270,9 @@ export default {
   },
   data () {
     return {
+      // 当前表单名
+      id:this.$route.params.id || 0,
+      name:this.$route.params.name || (localStorage.getItem("name") || ""),
       widgetEmpty,
       fields,
       widgetForm: {
@@ -274,32 +304,86 @@ export default {
       formOption:{
         column: [
 //表单名：
+          // {
+          // label: '作用域',
+          // prop: 'select',
+          // type: 'select',
+          // // drag: true,
+          // multiple: true,
+          // dicData: [{
+          //     value: 'Shanghai',
+          //     label: '上海'
+          //   }, {
+          //     value: 'Beijing',
+          //     label: '北京'
+          //   }, {
+          //     value: 'Shenzhen',
+          //     label: '深圳'
+          //   }]
+          // },
           {
-          label: '范围',
-          prop: 'select',
-          type: 'select',
-          // drag: true,
-          multiple: true,
-          dicData: [{
-              value: 'Shanghai',
-              label: '上海'
-            }, {
-              value: 'Beijing',
-              label: '北京'
-            }, {
-              value: 'Shenzhen',
-              label: '深圳'
-            }]
+              label: "表单名",
+              prop: "name",
+              span:50
           },
         ]
       },
     }
   },
   mounted () {
+    // console.log(this.$route.params);
     this.handleLoadCss();
     this.handleLoadStorage();
+    // this.handleAutoSave(); //delete
+    this.$nextTick(()=>{
+      if(this.$route.params.text){
+        this.widgetForm = JSON.parse(this.$route.params.text);
+      }
+      // add
+      // console.log(this.$route.query.action);
+      if(this.$route.query.action=="add") {
+        // this.name="";
+        // this.widgetForm = [];
+      }else{
+        
+      }
+    });
   },
   methods: {
+    // delete 自动保存 now use watch not use autoHandle
+    // handleAutoSave(){
+    //   setInterval(()=>{
+    //     if (this.storage) {
+    //       // console.log("auto save",this.widgetForm);
+    //       if (this.widgetForm.column && this.widgetForm.column.length > 0) {
+    //         localStorage.setItem("name",this.name);
+    //         localStorage.setItem('avue-form', JSON.stringify(this.widgetForm));
+    //       }
+    //     }
+    //   },5000);
+    // },
+    // 保存
+    async handleSave(){
+      // console.log(this.name);
+      if(!this.name) {
+        this.$message.error("表单名不能为空～！");
+        return;
+      }
+
+      let res = await this.api("index/formadd",{
+        id:this.id,
+        name:this.name,
+        text:JSON.stringify(this.widgetForm),
+        scope_id:this.$route.params.scope_id || (this.$route.query.scope_id || 0),
+        data_id:this.$route.params.data_id || (this.$route.query.data_id || 0),
+      })
+
+      // return;
+      // clear autoSave localStorage
+      localStorage.removeItem("name");
+      localStorage.removeItem("avue-form");
+      this.$router.replace({"name":"formlist"});
+    },
     // 组件初始化时加载本地存储中的options(需开启storage),若不存在则读取用户配置的options
     handleLoadStorage () {
       if (this.storage) {
