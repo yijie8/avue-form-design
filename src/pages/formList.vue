@@ -101,7 +101,7 @@ export default {
           }
           this.onLoad();
         }).catch((e) => {
-          this.$message.error('删除失败')
+          // this.$message.error('删除失败')
         })
       }
     },

@@ -49,6 +49,11 @@ import ScopeList from '@/pages/scopeList'
 import ScopeAdd from '@/pages/scopeAdd'
 import Form from '@/pages/form'
 
+
+import Data from '@/pages/data'
+import DataList from '@/pages/dataList'
+import DataList2 from '@/pages/dataList2'
+
 Vue.use(Router)
 
 // export default new Router({
@@ -82,6 +87,21 @@ const router = new Router({
             path: '/scope_add',
             name: 'scopeAdd',
             component: ScopeAdd
+        },
+        {
+            path: '/data',
+            name: 'data',
+            component: Data
+        },
+        {
+            path: '/data_list',
+            name: 'dataList',
+            component: DataList
+        },
+        {
+            path: '/data_list2',
+            name: 'dataList2',
+            component: DataList2
         }
 
     ]
