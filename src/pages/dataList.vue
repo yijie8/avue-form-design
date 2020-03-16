@@ -390,12 +390,24 @@ export default {
         });
       },
 
-       sortableChange(oldindex, newindex, row, list) {
+      async sortableChange(oldindex, newindex, row, list) {
         // this.data=[]
-        this.$nextTick(()=>{
+        // this.$nextTick(()=>{
           // this.data=list;
-        })
-       console.log(oldindex, newindex, row, list)
+        // })
+        let updateAll = [];
+        list.forEach((val,key)=>{
+          updateAll.push({
+            id:val.id,
+            soft:this.page.currentPage*1000+key
+          });
+        });
+
+        let res = await this.api("index/dataOrder",{
+          soft:updateAll,
+        });
+
+       console.log(updateAll,oldindex, newindex, row, list)
       },
       async handleChange(row){
         let res = await this.api("index/dataChange",{

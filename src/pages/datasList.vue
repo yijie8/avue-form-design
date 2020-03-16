@@ -11,7 +11,7 @@
       @click.stop="$router.back()">返回</el-button>
 
 
-    <el-button type="danger"
+    <!--<el-button type="danger"
       icon="el-icon-plus"
       size="small"
       plain
@@ -73,11 +73,23 @@ export default {
     },
     methods: {
       toggleSelection(){
+        console.log(this.selectData);
+        if(this.selectData.length==0) {
+          return;
+        }
+        let ids = [];
+        this.selectData.forEach((val)=>{
+          ids.push(this.dataAll[val["$index"]].id);
+        });
+        let idsStr = ids.join(",");
+        // console.log(idsStr);
+        // return;
+
         this.$confirm('确定要删除吗？', '警告', {
           type: 'warning'
         }).then(async () => {
-          let res = await this.api("index/scopedelete",{
-            id:scope.row.id
+          let res = await this.api("index/datasdelete",{
+            id:idsStr
           });
           if(res.Code!=200) {
             throw new Error(result.Message);
@@ -91,28 +103,6 @@ export default {
         this.selectData = list;
         console.log(list);
         // this.$message.success('选中的数据'+ JSON.stringify(list));
-      },
-      async handleChange(row){
-        let res = await this.api("index/scopeChange",{
-          id:row.row.id,
-          open:!row.row.open,
-        });
-        this.onLoad();
-      },
-      async handleDelete(scope) {
-        this.$confirm('确定要删除吗？', '警告', {
-          type: 'warning'
-        }).then(async () => {
-          let res = await this.api("index/scopedelete",{
-            id:scope.row.id
-          });
-          if(res.Code!=200) {
-            throw new Error(result.Message);
-          }
-          this.onLoad();
-        }).catch((e) => {
-          // this.$message.error('删除失败')
-        })
       },
 
       async onLoad(page) {
