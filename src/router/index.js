@@ -52,7 +52,7 @@ import Form from '@/pages/form'
 
 import Data from '@/pages/data'
 import DataList from '@/pages/dataList'
-import DataList2 from '@/pages/dataList2'
+import DatasList from '@/pages/datasList'
 
 Vue.use(Router)
 
@@ -99,9 +99,9 @@ const router = new Router({
             component: DataList
         },
         {
-            path: '/data_list2',
-            name: 'dataList2',
-            component: DataList2
+            path: '/datas_list',
+            name: 'datasList',
+            component: DatasList
         }
 
     ]

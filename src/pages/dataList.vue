@@ -19,18 +19,20 @@
       <template slot-scope="scope" slot="menu">
         <el-button :type="scope.row.open?'success':'danger'" size="small" @click="handleChange(scope)">{{scope.row.open?"开启":"禁用"}}</el-button>
 
-        <el-button icon="el-icon-document-copy" size="small" type="text" @click="addDatas(scope)">添加数据</el-button>
+        <!--<el-button icon="el-icon-document-copy" size="small" type="text" @click="addDatas(scope)">添加数据</el-button>-->
+
         <el-button icon="el-icon-document-copy" size="small" type="text" @click="listDatas(scope)">列表数据</el-button>
 
         <el-button icon="el-icon-document-copy" size="small" type="text" @click="handleCopy(scope)">调用代码</el-button> 
 
-        <el-button icon="el-icon-document-copy" size="small" type="text" @click="handleCopy(scope)">复制</el-button>        
+           
         <el-button icon="el-icon-document-copy" size="small" type="text" @click="addNext(scope)" v-if="scope.row.pid==0">添加下级</el-button><!--目前只支持添加一级下级-->
         <el-button icon="el-icon-document-copy" size="small" type="text" @click="listNext(scope)" v-if="scope.row.pid==0">查看下级</el-button>
 
         <el-button icon="el-icon-document-copy" size="small" type="text" @click="formDataBind(scope)">绑定表单</el-button>
         <el-button icon="el-icon-document-copy" size="small" type="text" @click="scopeDataBind(scope)">绑定作用域</el-button>
 
+<el-button icon="el-icon-document-copy" size="small" type="text" @click="handleCopy(scope)">复制</el-button>     
         <el-button icon="el-icon-edit" size="small" type="text" @click="modifyData(scope)">编辑</el-button>
         <el-button icon="el-icon-delete" size="small" type="text" @click="handleDelete(scope)">删除</el-button>
       </template>
@@ -47,7 +49,7 @@
       </avue-crud>
     </el-dialog>
 
-    <el-dialog :title="modify?'修改数据源':'添加数据源'" :visible.sync="addDialogTableVisible">
+    <el-dialog :title="modify>0?'修改数据源':'添加数据源'" :visible.sync="addDialogTableVisible">
       <avue-form ref="form" v-model="addObj" :option="addOption" @submit="addSubmit">
 
         <template slot-scope="scope" slot="pid">
@@ -66,10 +68,13 @@
       </avue-form>
     </el-dialog>
 
+    <!-- 添加　修改　数据 -->
+
   </div>
 </template>
 
 <script>
+// TODO 少移动 添加管理数据
 export default {
     data() {
       return {
@@ -77,7 +82,7 @@ export default {
         pid:this.$route.query.pid || "",
         pidadd:0,
         pidname:"",
-        modify:false,
+        modify:0,
 
         addDialogTableVisible:false,
         addObj:{},
@@ -96,7 +101,7 @@ export default {
                   label: "数据源名",
                   prop: "name",
                   span: 24,
-                  maxlength: 3,
+                  maxlength: 400,
                   suffixIcon: 'el-icon-tickets',
                   prefixIcon: 'el-icon-tickets',
                   minlength: 2,
@@ -278,10 +283,29 @@ export default {
     },
     methods: {
       async addSubmit(args,done){
-        console.log(args,"<<<<<<<<");
-        return;
-        // if(args.) 过滤掉　| 线
+        // if(this.modify>0) {
+          // console.log(args);
+          // 过滤掉　| 线
+          if(typeof(args.fid)=="string" && args.fid.indexOf("|")>0) {
+            args.fid = args.fid.split("|")[1];
+          }
+          if(typeof(args.sid)=="string" && args.sid.indexOf("|")>0) {
+            args.sid = args.sid.split("|")[1];
+          }
+        // }
+        console.log(args,{
+          id:this.modify,
+          pid:this.pidadd || (this.pid || 0),
+          fid:args.fid,
+          sid:args.sid,
+          name:args.name,
+          open:args.open===false?0:1,
+        },"<<<<<<<<");
+        // done();
+        // return;
+        
         let res = await this.api("index/dataadd",{
+          id:this.modify,
           pid:this.pidadd || (this.pid || 0),
           fid:args.fid,
           sid:args.sid,
@@ -437,24 +461,36 @@ export default {
         this.onLoad();
       },
       addNext(row){
-        this.modify=false;
+        this.modify=0;
         this.pidadd = row.row.id;
         this.pidname = row.row.name;
-        this.addObj = {};
+        this.addObj = {
+          name:"",
+          fid:"",
+          sid:"",
+        };
+        this.addOption.submitText = "添加下级";
         this.addDialogTableVisible = true;
+        console.log("3333333333333");
       },
       addData(){
-        this.modify=false;
+        this.modify=0;
         this.addDialogTableVisible=true;
         this.pidadd = 0;
         this.pidname = "";
         this.pid = 0;
+        this.addOption.submitText = "添加";
+        this.addObj = {
+          name:"",
+          fid:"",
+          sid:"",
+        };
       },
       modifyData(row){
-        this.modify=true;
+        this.modify=row.row.id;
         // console.log(row);
-        this.pidadd = row.row.id;
-        this.pidname = row.row.name;
+        this.pidadd = row.row.pid;
+        this.pidname = row.row.pname;
         this.addObj = {
           name:row.row.name,
           fid:row.row.fname+"|"+row.row.fid,
@@ -463,6 +499,10 @@ export default {
         this.addOption.submitText = "修改";
         // console.log(this.addObj);
         this.addDialogTableVisible = true;
+      },
+      listDatas(row){
+        // this.$router.push({name:"datasList",params:{row:row.row}})
+        this.$router.push({name:"datasList",query:{...row.row}})
       },
     },
 }
