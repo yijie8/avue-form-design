@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="margin-top: 10px">
     <avue-form-design :options="options"
                       @submit="handleSubmit"></avue-form-design>
   </div>

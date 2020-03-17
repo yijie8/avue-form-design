@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="margin-top: 10px">
 
 <el-form ref="form" :model="form" label-width="100px">
   <el-form-item label="作用域名称">
@@ -33,7 +33,7 @@
     </el-transfer>-->
     <el-row>
 
-      
+
       <el-col :span="8">
         <el-autocomplete
           v-model="enterpriseInfo"

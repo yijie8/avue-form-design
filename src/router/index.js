@@ -1,8 +1,17 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import store from '../store/index'
 import Home from '@/pages/index'
+import formList from '@/pages/formList'
+import ScopeList from '@/pages/scopeList'
+import ScopeAdd from '@/pages/scopeAdd'
+import Form from '@/pages/form'
 
+
+import Data from '@/pages/data'
+import DataList from '@/pages/dataList'
+import DatasList from '@/pages/datasList'
+import GroupList from '@/pages/groupList'
+import TestUser from '@/pages/testUser'
 
 // import Home from '@/views/Home.vue'
 // //首页
@@ -19,8 +28,6 @@ import Home from '@/pages/index'
 // import ApplyChanges from '@/components/ApplyChanges.vue'
 
 
-
-
 // import order_results from '@/components/order/order_results.vue'
 // import order_list from '@/components/order/order_list.vue'
 // import order_detail from '@/components/order_detail/order_detail.vue'
@@ -32,83 +39,77 @@ import Home from '@/pages/index'
 // import chargeDetails from '@/components/order_detail/components/chargeDetails.vue'
 
 
-
 // import city from '@/page/city.vue'
 
 // import PrivateInceat from '@/page/PrivateInceat.vue'
 // import orderKnow from '@/page/orderKnow.vue'
 // import countDown from '@/page/countDown.vue'
 
-
-
-
-
-
-import formList from '@/pages/formList'
-import ScopeList from '@/pages/scopeList'
-import ScopeAdd from '@/pages/scopeAdd'
-import Form from '@/pages/form'
-
-
-import Data from '@/pages/data'
-import DataList from '@/pages/dataList'
-import DatasList from '@/pages/datasList'
-
 Vue.use(Router)
 
 // export default new Router({
 const router = new Router({
-    mode: 'hash',
-    // mode: 'history',
-    base: '',
-    // base:'tripTrain',
-    routes: [{
-            path: '/',
-            name: 'home',
-            component: Home
-        },
+  mode: 'hash',
+  // mode: 'history',
+  base: '',
+  // base:'tripTrain',
+  routes: [{
+    path: '/',
+    name: 'home',
+    component: Home
+  },
 
-        {
-            path: '/form',
-            name: 'form',
-            component: Form
-        },
-        {
-            path: '/formlist',
-            name: 'formlist',
-            component: formList
-        },
-        {
-            path: '/scope_list',
-            name: 'scopeList',
-            component: ScopeList
-        },
-        {
-            path: '/scope_add',
-            name: 'scopeAdd',
-            component: ScopeAdd
-        },
-        {
-            path: '/data',
-            name: 'data',
-            component: Data
-        },
-        {
-            path: '/data_list',
-            name: 'dataList',
-            component: DataList
-        },
-        {
-            path: '/datas_list',
-            name: 'datasList',
-            component: DatasList
-        }
+    {
+      path: '/form',
+      name: 'form',
+      component: Form
+    },
+    {
+      path: '/form_list',
+      name: 'formlist',
+      component: formList
+    },
+    {
+      path: '/scope_list',
+      name: 'scopeList',
+      component: ScopeList
+    },
+    {
+      path: '/scope_add',
+      name: 'scopeAdd',
+      component: ScopeAdd
+    },
+    {
+      path: '/data',
+      name: 'data',
+      component: Data
+    },
+    {
+      path: '/data_list',
+      name: 'dataList',
+      component: DataList
+    },
+    {
+      path: '/datas_list',
+      name: 'datasList',
+      component: DatasList
+    },
+    {
+      path: '/group_list',
+      name: 'groupList',
+      component: GroupList
+    },
+    {
+      path: '/test',
+      name: 'testUser',
+      component: TestUser
+    }
 
-    ]
+  ]
 });
 
 router.beforeEach((to, from, next) => {
-    next();
+  next();
 });
 
 

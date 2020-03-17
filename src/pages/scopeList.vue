@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="margin-top: 10px">
     <avue-crud :data="data" :option="option" :table-loading="loading" :page.sync="page" @on-load="onLoad">
 
     <template slot-scope="scope" slot="menuLeft">
@@ -68,7 +68,7 @@ export default {
       };
     },
     mounted(){
- 
+
     },
     methods: {
       async handleChange(row){
