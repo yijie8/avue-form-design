@@ -16,7 +16,7 @@
           {{scope.row.open?"开启":"禁用"}}
         </el-button>
 
-        <el-button icon="el-icon-document-copy" size="small" type="text" @click="handleCopy(scope)">调用代码
+        <el-button icon="el-icon-document-copy" size="small" type="text" @click="handleCode(scope)">调用代码
         </el-button>
         <el-button icon="el-icon-document-copy" size="small" type="text" @click="formDataBind(scope)">绑定数据
         </el-button>
@@ -36,16 +36,29 @@
 
     <el-dialog title="绑定数据源" :visible.sync="formDatadialogTableVisible" width="70%">
       <avue-crud :data="formData" :option="formDataoption" :table-loading="formDataLoading"
-                 :page.sync="formDatapage" @on-load="formDataonLoad" ref="crud" @selection-change="selectionChange">
+                 :page.sync="formDatapage" @on-load="formDataonLoad" ref="crud" @selection-change="selectionChange"
+                 @row-click="formDatahandleRowClick">
       </avue-crud>
       <div style="margin-top: -40px">
         <el-button type="danger" style="margin-left:10px;z-index:99999999" @click.stop="toggleSelection()">选择
         </el-button>
 
-        <el-button @click="$refs.crud.toggleSelection([formData[1]])">选中第二行</el-button>
+        <!--        <el-button @click="$refs.crud.toggleSelection([formData[1]])">选中第二行</el-button>-->
 
       </div>
     </el-dialog>
+
+    <el-dialog title="接口地址" :visible.sync="codedialogTableVisible" width="70%">
+      <el-form :inline="true" class="demo-form-inline" >
+        <el-form-item label="地址：">
+          <el-input v-model="codeForm" placeholder="" ></el-input>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="codeCopy">复制</el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
+
     <!--@row-click="formDatahandleRowClick"-->
   </div>
 </template>
@@ -54,6 +67,8 @@
   export default {
     data() {
       return {
+        codedialogTableVisible: false,
+        codeForm: "",
         formDatadialogTableVisible: false,
         formDataloading: false,
         formData: [],
@@ -84,6 +99,10 @@
               prop: 'name'
             },
             {
+              label: '上级',
+              prop: 'pname'
+            },
+            {
               label: '添加时间',
               prop: 'atime'
             }
@@ -94,6 +113,7 @@
           pagerCount: 5
         },
         selectData: [],
+        selectDataIDAr: [],
 
 
         loading: false,
@@ -119,11 +139,12 @@
             },
             {
               label: '分组名',
-              prop: 'name'
+              prop: 'name',
+              width: 350,
             },
             {
               label: '分组项',
-              prop: 'text'
+              prop: 'texts'
             }
           ]
         },
@@ -171,12 +192,28 @@
 
     },
     methods: {
+      handleCode(row) {
+        this.codeForm = "11111111";
+        this.codedialogTableVisible = true;
+      },
+      codeCopy() {
+        this.$Clipboard({
+          text: this.codeForm//JSON.stringify(this.widgetFormPreview, null, 2)
+        }).then(() => {
+          this.$message.success('复制成功')
+        }).catch(() => {
+          this.$message.error('复制失败')
+        });
+      },
+      async formDatahandleRowClick(row, event, column) {
+        this.$refs.crud.toggleSelection([row]);
+      },
       async toggleSelection() {
-        console.log(this.selectData);
-        let text = this.selectData.map(value => {
-          return value.id;
-        }).join(",");
+        // console.log(this.selectData);
+        // let testArx = [];
 
+
+        let text = this.selectDataIDAr.join(",");
         // return;
         let res = await this.api("index/groupBindData", {
           id: this.rowNow.id,
@@ -191,29 +228,71 @@
         this.formDatadialogTableVisible = false;
       },
       selectionChange(list) {
+        console.log(list, "<<<<<<<<<<<<<<<<<<<<<<<<list");
         // 自动处理　添加了还是删除了
+        // let ar_old = this.selectData[this.formDatapage.currentPage].map(value => {
+        //   return value.id;
+        // });
+        // let ar_now = list.map(value => {
+        //   return value.id;
+        // });
 
-        this.selectData = list;
-        console.log(list);
+
+        this.selectData[this.formDatapage.currentPage] = list;
+        // console.log(this.selectData);
+        this.selectDataIDAr = [];
+        for (let k in this.selectData) {
+          let ar = this.selectData[k].map(value => {
+            return value.id;
+          });
+          ar.forEach(val => {
+            if (this.selectDataIDAr.indexOf(val) < 0) {
+              this.selectDataIDAr.push(val);
+            }
+          });
+        }
+
+        // console.log(this.selectDataIDAr,"this.selectDataIDAr");
+
+        // console.log(this.selectData);
         // this.$message.success('选中的数据'+ JSON.stringify(list));
       },
-      formDataBind(row) {
-        // console.log(row);
+      async formDataBind(row) {
         this.rowNow = row.row;
+
+        // console.log(row);
+        this.selectDataIDAr = [];
+        this.selectData = [];
+        this.formDatapage.currentPage = 1;
+        // if (!this.formData || true)  {
+        // console.log(2222222);
+        await this.formDataonLoad();
+        // }
+
+        // this.formData =
+
         try {
           this.$refs.crud.toggleSelection();
         } catch (e) {
         }
-        this.selectedForm();
+        // this.selectedForm();
         this.formDatadialogTableVisible = true;
       },
+      // 把已选择的选上
       selectedForm() {
-        // 把已选择的选上
-        // console.log(this.rowNow.text);
+        console.log(this.rowNow.text);
+        console.log(this.selectDataIDAr, "<<<<<<<<<<this.selectDataIDAr");
         let arText = this.rowNow.text.split(",");
         let ar = this.formData.filter(v => {
-          return arText.indexOf(v.id.toString()) >= 0;
+          return arText.indexOf(v.id.toString()) >= 0 || (this.selectDataIDAr.length > 0 && this.selectDataIDAr.indexOf(parseInt(v.id)) >= 0);
         });
+
+
+        let cons = ar.map(value => {
+          return value.id;
+        });
+        console.log(cons, "<<<<<<<<<<<<<<<<<<<<<<<<<<选中");
+
         setTimeout(() => {
           if (ar.length > 0) {
             this.$refs.crud.toggleSelection(ar);

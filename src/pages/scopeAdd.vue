@@ -1,8 +1,13 @@
 <template>
-  <div style="margin-top: 10px">
-
+  <div style="margin-top: 10px;margin-left: 10px">
+    <el-button type="danger"
+               icon="el-icon-plus"
+               size="small"
+               plain
+               @click.stop="$router.back()">返回
+    </el-button>
 <el-form ref="form" :model="form" label-width="100px">
-  <el-form-item label="作用域名称">
+  <el-form-item label="作用域名称" style="width: 80%">
     <el-input v-model="scopeName" placeholder="请输入内容"></el-input>
   </el-form-item>
 

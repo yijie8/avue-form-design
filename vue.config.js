@@ -1,7 +1,7 @@
 const path = require("path");
 const fs = require("fs");
 const CompressionWebpackPlugin = require("compression-webpack-plugin");
-const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
+// const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
 
 function resolve(dir) {
     return path.join(__dirname, "./", dir);
@@ -36,7 +36,7 @@ module.exports = {
             'element-ui': 'ElementUI',});
     },
     // node_modules依赖项es6语法未转换问题
-    // transpileDependencies: ["vuex-persistedstate"],
+    transpileDependencies: ["vuex-persistedstate","UglifyJs"],
     configureWebpack: config => {
         if (process.env.NODE_ENV === 'production') {
             config.optimization.minimizer[0].options.terserOptions.compress.warnings = false
@@ -49,16 +49,16 @@ module.exports = {
             myConfig.plugins = [];
             myConfig.optimization = {
                 minimizer: [
-                    new UglifyJsPlugin({
-                        uglifyOptions: {
-                            compress: {
-                                // warnings: false,
-                                drop_console: true, //console
-                                drop_debugger: false,
-                                pure_funcs: ["console.log"] //移除console
-                            }
-                        }
-                    })
+                    // new UglifyJsPlugin({
+                    //     uglifyOptions: {
+                    //         compress: {
+                    //             // warnings: false,
+                    //             drop_console: true, //console
+                    //             drop_debugger: false,
+                    //             pure_funcs: ["console.log"] //移除console
+                    //         }
+                    //     }
+                    // })
                 ]
             };
             // 2. 构建时开启gzip，降低服务器压缩对CPU资源的占用，服务器也要相应开启gzip
@@ -82,7 +82,7 @@ module.exports = {
                 // 端口
                 port: 8080,
                 // 是否开启https
-                https: true
+                https: false
             };
         }
         return myConfig;

@@ -29,7 +29,7 @@
         <el-button icon="el-icon-document-copy" size="small" type="text" @click="listDatas(scope)">列表数据
         </el-button>
 
-        <el-button icon="el-icon-document-copy" size="small" type="text" @click="handleCopy(scope)">调用代码
+        <el-button icon="el-icon-document-copy" size="small" type="text" @click="handleCode(scope)">调用代码
         </el-button>
 
 
@@ -95,7 +95,7 @@
     data() {
       return {
         loading: false,
-        pid: this.$route.query.pid || "",
+        pid: this.$route.query.pid || 0,
         pidadd: 0,
         pidname: "",
         modify: 0,
